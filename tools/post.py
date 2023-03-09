@@ -2,10 +2,10 @@ from rich import print
 import json
 
 
-def postMsg(channel, base_path, project_id, job_id, runner_id, project_name,
+def postMsg(channel, project_id, job_id, runner_id, project_name,
             job_name, args):
     message_body = {
-        'url': base_path + str(project_id) + '/jobs/' + str(job_id) + '/trace',
+        'url': args.gitlab_url + str(project_id) + '/jobs/' + str(job_id) + '/trace',
         'runner_id': runner_id,
         'project_id': project_id,
         'job_id': job_id,

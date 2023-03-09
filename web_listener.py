@@ -7,13 +7,6 @@ from tools.connect import connect
 import argparse
 
 
-# Variables
-exchange_name = 'gitlab_exchange'
-routing_key = 'jobs'
-
-base_path = 'https://gitlab.com/api/v4/projects/'
-
-
 def signal_handler(sig, frame):
     print('Received SIGINT, shutting down gracefully...')
     # Add cleanup code here
@@ -42,7 +35,6 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             job_name = query_params.get('job_name', [''])[0]
 
             postMsg(channel,
-                    base_path,
                     project_id,
                     job_id,
                     runner_id,
@@ -92,6 +84,10 @@ parser.add_argument('--exchange', dest='rabbit_exchange', type=str,
 parser.add_argument('--routekey', dest='rabbit_route_key', type=str,
                     default='jobs', help='RabbitMQ Exchange Routing Key \
                         [Default: jobs]')
+parser.add_argument('--gitlab', dest='gitlab_url', type=str,
+                    default='https://gitlab.com/api/v4/projects/',
+                    help='Gitlab Base URL \
+                        [Default: https://gitlab.com/api/v4/projects/]')
 parser.add_argument('--debug', action='store_true', help='enable debug mode')
 
 args = parser.parse_args()

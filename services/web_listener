@@ -1,0 +1,11 @@
+[Unit]
+Description=Gitlab Job Console Grabber
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+ExecStart=/usr/bin/python3 web_listener.py
+
+[Install]
+WantedBy=multi-user.target
