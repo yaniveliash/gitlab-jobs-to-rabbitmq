@@ -1,3 +1,23 @@
+## What is this project about
+
+I could't find a way to ingest console output of gitlab pipelines,
+and so I decided to use the existing gitlab API to grab console outputs
+based on project ID and job ID, transform the data and ingest it to Elasticsearch
+for further analysis.
+
+The concept is pretty simple:
+There is a webserver that listen for incoming GET request with query payload
+for each pipeline that we want to ingest there is an `after_script` that simple curl
+our webserver endpoint with the relevant payload.
+
+The webserver transform that data into JSON and ship it to RabbitMQ as a message.
+
+A consumer listen on that queue and invoke API call back to Gitlab with the constructed
+API URL to grab the particular job console output.
+
+It then transform the data into json and ship it to Elasticsearch cluster.
+
+
 ## Backend listener from gitlab
 
 Listening on port 8080
@@ -42,10 +62,19 @@ Amend the script path
 - Ingest to Elasticsearch
 
 
-## Gitlab variables
-- CI_JOB_ID
+## Gitlab
+
+We are interested in the following variables
 - CI_PROJECT_ID
 - CI_RUNNER_ID
+- CI_JOB_ID
+- CI_JOB_NAME
+- CI_PROJECT_NAME
+
+At the after_script you will need to execute the following:
+```
+curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}
+```
 
 
 ## Docker
