@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO,
 def getJobConsole(payload):
     logging.info(f'Trying to grab {payload["url"]}')
     headers = {'PRIVATE-TOKEN': payload['gitlab_token']}
-    response = requests.get(payload['url'], headers=headers)
+    response = requests.get(payload['url'], stream=True, headers=headers)
 
     if response.status_code != 200:
         logging.error(f'{response.content.decode("utf-8")}')
@@ -27,7 +27,8 @@ def callback(ch, method, properties, message: str):
     if debug:
         print(payload)
     job_console_output = getJobConsole(payload)
-    print(job_console_output)
+    for chunk in job_console_output.iter_content(chunk_size=1024):
+        print(chunk)
 
 
 def getMessage(channel, queue_name: str, d: bool):
