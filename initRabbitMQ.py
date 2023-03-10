@@ -3,6 +3,7 @@ from tools.init import init
 import argparse
 from rich import print
 import logging
+from tools.error import error
 
 
 # Parse command-line arguments
@@ -50,15 +51,15 @@ try:
     connection, channel = connect(args.rabbit_user, args.rabbit_pass,
                                   args.rabbit_host, args.rabbit_port,
                                   args.rabbit_vhost)
-except ValueError as e:
-    print(f"Caught exception: {e}")
+except Exception:
+    error('Error connecting to RabbitMQ')
 
 try:
     init(channel, args.rabbit_exchange, args.rabbit_exchange_type,
          args.rabbit_exchange_durable, args.rabbit_exchange_passive,
          args.rabbit_queue, args.rabbit_route_key)
-except ValueError as e:
-    print(f"Caught exception: {e}")
+except Exception:
+    error('Error initializing RabbitMQ')
 
 # Close the connection
 connection.close()

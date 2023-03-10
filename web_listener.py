@@ -5,6 +5,8 @@ import sys
 from tools.post import postMsg
 from tools.connect import connect
 import argparse
+from rich import print
+from tools.error import error
 
 
 def signal_handler(sig, frame):
@@ -90,11 +92,14 @@ parser.add_argument('--debug', action='store_true', help='enable debug mode')
 
 args = parser.parse_args()
 
-# Start the web server on port 8080
-connection, channel = connect(args.rabbit_user, args.rabbit_pass,
-                              args.rabbit_host, args.rabbit_port,
-                              args.rabbit_vhost)
+try:
+    connection, channel = connect(args.rabbit_user, args.rabbit_pass,
+                                  args.rabbit_host, args.rabbit_port,
+                                  args.rabbit_vhost)
+except Exception:
+    error("Error connecting to RabbitMQ")
 
+# Start the web server on port 8080
 httpd = HTTPServer(('localhost', args.port), MyHTTPRequestHandler)
 print('Listening on port 8080...')
 httpd.serve_forever()

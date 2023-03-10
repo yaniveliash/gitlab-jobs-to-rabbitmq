@@ -3,6 +3,7 @@ from tools.get import getMessage
 import argparse
 import sys
 import signal
+from tools.error import error
 
 
 def signal_handler(sig, frame):
@@ -37,13 +38,13 @@ try:
     connection, channel = connect(args.rabbit_user, args.rabbit_pass,
                                   args.rabbit_host, args.rabbit_port,
                                   args.rabbit_vhost)
-except ValueError as e:
-    print(f"Caught exception: {e}")
+except Exception:
+    error('Error connecting to RabbitMQ')
 
 try:
     getMessage(channel, args.rabbit_queue, args.debug)
-except ValueError as e:
-    print(f"Caught exception: {e}")
+except Exception:
+    error('Error getting messages from RabbitMQ')
 
 # Close the connection
 connection.close()
