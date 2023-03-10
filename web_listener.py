@@ -9,7 +9,6 @@ import argparse
 
 def signal_handler(sig, frame):
     print('Received SIGINT, shutting down gracefully...')
-    # Add cleanup code here
     sys.exit(0)
 
 
@@ -58,7 +57,6 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 signal.signal(signal.SIGINT, signal_handler)
-
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Start a web server to handle \
