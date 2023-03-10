@@ -2,6 +2,7 @@ from tools.connect import connect
 from tools.init import init
 import argparse
 from rich import print
+import logging
 
 
 # Parse command-line arguments
@@ -36,8 +37,14 @@ parser.add_argument('--routekey', dest='rabbit_route_key', type=str,
 parser.add_argument('--queue', dest='rabbit_queue', type=str,
                     default='jobs', help='RabbitMQ Queue Name \
                         [Default: jobs]')
+parser.add_argument('--debug', action='store_true', help='enable debug mode')
 
 args = parser.parse_args()
+
+if args.debug:
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
 
 try:
     connection, channel = connect(args.rabbit_user, args.rabbit_pass,
@@ -56,4 +63,7 @@ except ValueError as e:
 # Close the connection
 connection.close()
 
-print('[green]Initialized and created.[/green]')
+if args.debug:
+    logging.info('Initialized and created successfully.')
+else:
+    print('[green]Initialized and created successfully.[/green]')
