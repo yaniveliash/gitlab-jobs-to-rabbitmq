@@ -28,6 +28,7 @@ Acceping GET requests with 5 payloads
 - job_name
 - project_name
 - runner_id
+- gitlab_token
 
 Pushing directly to rabbitMQ queue
 
@@ -50,8 +51,8 @@ Possible flags:
 
 **Service**
 
-services/web_listener
-Amend the script path
+- services/web_listener
+- services/queue_listener
 
 
 ## Backend message consumer
@@ -60,6 +61,17 @@ Amend the script path
 - Curl Gitlab API
 - Reformat data to json
 - Ingest to Elasticsearch
+
+```
+  -h, --help            show this help message and exit
+  --user RABBIT_USER    RabbitMQ Username
+  --pass RABBIT_PASS    RabbitMQ Password
+  --host RABBIT_HOST    RabbitMQ Host
+  --port RABBIT_PORT    RabbitMQ Port [Default: 5672]
+  --vhost RABBIT_VHOST  RabbitMQ VHost [Default: my_vhost]
+  --queue RABBIT_QUEUE  RabbitMQ Queue Name [Default: jobs]
+  --debug               enable debug mode
+```
 
 
 ## Gitlab
