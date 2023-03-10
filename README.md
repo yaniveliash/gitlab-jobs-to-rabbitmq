@@ -30,6 +30,8 @@ Acceping GET requests with 5 payloads
 - runner_id
 - gitlab_token
 
+> I'm well aware that publishing gitlab_token as plain text is a big NO-NO, feel free to PR SSL support.
+
 Pushing directly to rabbitMQ queue
 
 Possible flags:
