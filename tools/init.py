@@ -1,5 +1,5 @@
-def init(channel, exchange_name, exchange_type, durable, passive, queue_name,
-         routing_key):
+def init(channel, exchange_name: str, exchange_type: str, durable: bool,
+         passive: bool, queue_name: str, routing_key: str):
     # Create an exchange only if it doesn't exist
 
     channel.exchange_delete(exchange=exchange_name)
