@@ -87,7 +87,7 @@ We are interested in the following variables
 
 At the after_script you will need to execute the following:
 ```
-curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}
+curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}&gitlab_token=$TOKEN
 ```
 
 
@@ -98,3 +98,19 @@ Change the following if needed:
 - Password
 - Default VHOST
 - RabbitMQ Hostname
+
+
+## How to Run
+
+First spin up RabbitMQ in docker, amend the values as needed
+> Note that there is no persistant volume, you will need to mount `            - 'HOST_PATH_TO_RABBITMQ_LOCAL/data:/var/lib/rabbitmq/mnesia/'`
+
+Next, initialize your new RabbitMQ using `initRabbitMQ.py`
+
+Now spin up the consumer as a service using `queue_listener.py`
+
+And last, spin up the web server to accept calls from gitlab using `web_listener.py`
+
+Now using an `after_script` in gitlab pipeline add a curl call as described above in this readme.
+
+I recommend adding monitoring on your services and enabling SSL for the communication.
