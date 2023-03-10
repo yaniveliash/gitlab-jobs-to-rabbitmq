@@ -1,11 +1,11 @@
 [Unit]
-Description=Gitlab Web Listener
+Description=Gitlab Queue listener
 
 [Service]
 Type=simple
 Restart=always
 RestartSec=5s
-ExecStart=/usr/bin/python3 web_listener.py
+ExecStart=/usr/bin/python3 queue_listener.py
 
 [Install]
 WantedBy=multi-user.target
