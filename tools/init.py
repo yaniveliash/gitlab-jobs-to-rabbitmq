@@ -1,14 +1,15 @@
-def init(channel, exchange_name, exchange_type, durable, passive, queue_name, routing_key):
+def init(channel, exchange_name, exchange_type, durable, passive, queue_name,
+         routing_key):
     # Create an exchange only if it doesn't exist
 
     channel.exchange_delete(exchange=exchange_name)
 
     try:
         channel.exchange_declare(
-            exchange=exchange_name, exchange_type=exchange_type, durable=durable, passive=passive)
-    except:
-        print(
-            f'[red]Something went wrong with creating exchange: {exchange_name}[/red]')
+            exchange=exchange_name, exchange_type=exchange_type,
+            durable=durable, passive=passive)
+    except Exception as e:
+        raise ValueError("Error in function1") from e
 
     # Check if the queue exists
     queue_declare = channel.queue_declare(
