@@ -103,7 +103,7 @@ Change the following if needed:
 ## How to Run
 
 First spin up RabbitMQ in docker, amend the values as needed
-> Note that there is no persistant volume, you will need to mount `            - 'HOST_PATH_TO_RABBITMQ_LOCAL/data:/var/lib/rabbitmq/mnesia/'`
+> Note that there is no persistant volume, you will need to mount `-v 'HOST_PATH_TO_RABBITMQ_LOCAL/data:/var/lib/rabbitmq/mnesia/'`
 
 Next, initialize your new RabbitMQ using `initRabbitMQ.py`
 
