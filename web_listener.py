@@ -17,8 +17,6 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/favicon.ico':
-            # Return a 404 error response for the favicon request
-            # self.send_error(404, 'File not found')
             return
 
         try:
@@ -32,6 +30,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             runner_id = query_params.get('runner_id', [''])[0]
             project_name = query_params.get('project_name', [''])[0]
             job_name = query_params.get('job_name', [''])[0]
+            gitlab_token = query_params.get('gitlab_token', [''])[0]
 
             postMsg(channel,
                     project_id,
@@ -39,6 +38,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
                     runner_id,
                     project_name,
                     job_name,
+                    gitlab_token,
                     args)
 
             # Send an HTTP response with the sum of the four variables
@@ -89,7 +89,6 @@ parser.add_argument('--gitlab', dest='gitlab_url', type=str,
 parser.add_argument('--debug', action='store_true', help='enable debug mode')
 
 args = parser.parse_args()
-
 
 # Start the web server on port 8080
 connection, channel = connect(args.rabbit_user, args.rabbit_pass,
