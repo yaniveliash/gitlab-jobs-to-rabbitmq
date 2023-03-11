@@ -15,7 +15,7 @@ def ingest(args, console, payload):
 
     # Index name is always YYYY-MM-DD-$IndexName
     index_name = datetime.datetime.today().strftime('%Y-%m-%d') + '-' \
-        + args.es_index
+        + payload['index_name']
 
     es = connect.elasticsearch(args.es_host, args.es_port, args.es_user,
                                args.es_pass, args.es_url_scheme,

@@ -30,6 +30,7 @@ Acceping 5 URL Query payload:
 - project_name
 - runner_id
 - gitlab_token
+- index_name
 
 > I'm well aware that publishing gitlab_token as plain text is a big NO-NO, feel free to PR SSL support.
 
@@ -84,7 +85,6 @@ Possible flags:
   --es-port ES_PORT     Elasticsearch port [Default: 9200]
   --es-user ES_USER     Elasticsearch Username [Default: elastic]
   --es-pass ES_PASS     Elasticsearch Password for user 'elastic'
-  --es-index ES_INDEX   Elasticsearch Index name where today's date [YYYY-MM-DD-*] is always attached to input name
   --es-url-scheme ES_URL_SCHEME
                         Elasticsearch URL scheme [http/https] [Default: https]
   --es-verify-ssl ES_SSL_NOVERIFY
@@ -102,10 +102,11 @@ We are interested in the following variables
 - CI_JOB_NAME
 - CI_PROJECT_NAME
 - GITLAB_TOKEN
+- ES_INDEX_NAME
 
 At the after_script you will need to execute the following:
 ```
-curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}&gitlab_token=${GITLAB_TOKEN}
+curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}&gitlab_token=${GITLAB_TOKEN}&index_name=${ES_INDEX_NAME}
 ```
 
 

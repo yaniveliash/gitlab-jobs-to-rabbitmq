@@ -79,9 +79,6 @@ def queue():
                             [Default: {es_user}]')
     parser.add_argument('--es-pass', dest='es_pass', type=str, required=True,
                         help='Elasticsearch Password for user \'elastic\'')
-    parser.add_argument('--es-index', dest='es_index', type=str, required=True,
-                        help='Elasticsearch Index name where today\'s date \
-                            [YYYY-MM-DD-*] is always attached to input name')
     parser.add_argument('--es-url-scheme', dest='es_url_scheme', type=str,
                         default=es_url_scheme, help=f'Elasticsearch URL \
                             scheme [http/https] [Default: {es_url_scheme}]')

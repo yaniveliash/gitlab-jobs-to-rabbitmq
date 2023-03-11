@@ -33,6 +33,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             project_name = query_params.get('project_name', [''])[0]
             job_name = query_params.get('job_name', [''])[0]
             gitlab_token = query_params.get('gitlab_token', [''])[0]
+            index_name = query_params.get('index_name', [''])[0]
 
             try:
                 connection, channel = connect.rabbitmq(args.rabbit_user,
@@ -50,6 +51,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
                     project_name,
                     job_name,
                     gitlab_token,
+                    index_name,
                     args)
 
             # Send an HTTP response with the sum of the four variables

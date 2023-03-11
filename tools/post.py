@@ -3,7 +3,7 @@ import json
 
 
 def postMsg(channel, project_id, job_id, runner_id, project_name,
-            job_name, gitlab_token, args):
+            job_name, gitlab_token, index_name, args):
     message_body = {
         'url': args.gitlab_url + '/' + 'api/v4/projects/' + str(project_id) +
         '/jobs/' + str(job_id) + '/trace',
@@ -12,6 +12,7 @@ def postMsg(channel, project_id, job_id, runner_id, project_name,
         'job_id': job_id,
         'job_name': job_name,
         'project_name': project_name,
+        'index_name': index_name,
         'gitlab_token': gitlab_token
     }
     message_json = json.dumps(message_body)

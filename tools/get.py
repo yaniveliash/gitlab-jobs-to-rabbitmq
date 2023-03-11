@@ -28,13 +28,20 @@ def callback(ch, method, properties, rabbit_message: str):
     if args.debug:
         print(payload)
     job_console_output = getJobConsole(payload)
-    es.ingest(args, job_console_output, payload)
+    try:
+        es.ingest(args, job_console_output, payload)
+        channel.basic_ack(delivery_tag=method.delivery_tag)
+    except:
+        channel.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
+        logging.error('Message ingestion to Elasticsearch failed.')
 
 
-def getMessage(channel, a):
+def getMessage(ch, a):
     global args
     args = a
+    global channel
+    channel = ch
     # Start consuming messages from the queue
     channel.basic_consume(queue=args.rabbit_queue, on_message_callback=callback,
-                          auto_ack=True)
+                          auto_ack=False)
     channel.start_consuming()
