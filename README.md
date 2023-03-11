@@ -15,13 +15,14 @@ The webserver transform that data into JSON and ship it to RabbitMQ as a message
 A consumer listen on that queue and invoke API call back to Gitlab with the constructed
 API URL to grab the particular job console output.
 
-It then transform the data into json and ship it to Elasticsearch cluster.
+It then transform each line from the console output into an Elasticsearch document and ship it to the cluster.
 
 
-## Backend listener from gitlab
+## Web listener from gitlab
+`web_listener.py`
 
 Listening on port 8080
-Acceping GET requests with 5 payloads
+Acceping 5 URL Query payload:
 
 - job_id
 - project_id
@@ -44,10 +45,10 @@ Possible flags:
   --port RABBIT_PORT    RabbitMQ Port [Default: 5672]
   --vhost RABBIT_VHOST  RabbitMQ VHost [Default: my_vhost]
   --exchange RABBIT_EXCHANGE
-                        RabbitMQ Exchange [Default: gitlab_exchange]
+                        RabbitMQ Exchange [Default: gitlab_jobs]
   --routekey RABBIT_ROUTE_KEY
                         RabbitMQ Exchange Routing Key [Default: jobs]
-  --gitlab GITLAB_URL   Gitlab Base URL [Default: https://gitlab.com/api/v4/projects/]
+  --gitlab GITLAB_URL   Gitlab Base URL [Default: https://gitlab.com/]
   --debug               enable debug mode
 ```
 
@@ -57,7 +58,8 @@ Possible flags:
 - services/queue_listener
 
 
-## Backend message consumer
+## Message consumer
+`queue_listener.py`
 
 - Grab message from RabbitMQ
 - Curl Gitlab API
@@ -66,12 +68,27 @@ Possible flags:
 
 ```
   -h, --help            show this help message and exit
-  --user RABBIT_USER    RabbitMQ Username
-  --pass RABBIT_PASS    RabbitMQ Password
-  --host RABBIT_HOST    RabbitMQ Host
-  --port RABBIT_PORT    RabbitMQ Port [Default: 5672]
-  --vhost RABBIT_VHOST  RabbitMQ VHost [Default: my_vhost]
-  --queue RABBIT_QUEUE  RabbitMQ Queue Name [Default: jobs]
+  --rmq-user RABBIT_USER
+                        RabbitMQ Username
+  --rmq-pass RABBIT_PASS
+                        RabbitMQ Password
+  --rmq-host RABBIT_HOST
+                        RabbitMQ Host
+  --rmq-port RABBIT_PORT
+                        RabbitMQ Port [Default: 5672]
+  --rmq-vhost RABBIT_VHOST
+                        RabbitMQ VHost [Default: my_vhost]
+  --rmq-queue RABBIT_QUEUE
+                        RabbitMQ Queue Name [Default: jobs]
+  --es-host ES_HOST     Elasticsearch Hostname
+  --es-port ES_PORT     Elasticsearch port [Default: 9200]
+  --es-user ES_USER     Elasticsearch Username [Default: elastic]
+  --es-pass ES_PASS     Elasticsearch Password for user 'elastic'
+  --es-index ES_INDEX   Elasticsearch Index name where today's date [YYYY-MM-DD-*] is always attached to input name
+  --es-url-scheme ES_URL_SCHEME
+                        Elasticsearch URL scheme [http/https] [Default: https]
+  --es-verify-ssl ES_SSL_NOVERIFY
+                        Elasticsearch ignore self-signed SSL certificates [Default: False]
   --debug               enable debug mode
 ```
 
@@ -84,28 +101,32 @@ We are interested in the following variables
 - CI_JOB_ID
 - CI_JOB_NAME
 - CI_PROJECT_NAME
+- GITLAB_TOKEN
 
 At the after_script you will need to execute the following:
 ```
-curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}&gitlab_token=$TOKEN
+curl http://$LISTENER_HOST:$PORT/?project_id=${CI_PROJECT_ID}&runner_id=${CI_RUNNER_ID}&job_id={$CI_JOB_ID}&job_name=${CI_JOB_NAME}&project_name=${CI_PROJECT_NAME}&gitlab_token=${GITLAB_TOKEN}
 ```
 
 
 ## Docker
 
-Change the following if needed:
-- Username
-- Password
-- Default VHOST
-- RabbitMQ Hostname
+I've added a few examples for the following services:
+- RabbitMQ
+- Elasticsearch
+- Kibana
 
+> These are just examples for testing, amend those to meet your requirements, needs and production readyness.
 
 ## How to Run
 
 First spin up RabbitMQ in docker, amend the values as needed
 > Note that there is no persistant volume, you will need to mount `-v 'HOST_PATH_TO_RABBITMQ_LOCAL/data:/var/lib/rabbitmq/mnesia/'`
 
+Now spin up Elasticsearch (see notes in the shell script) and next Kibana.
+
 Next, initialize your new RabbitMQ using `initRabbitMQ.py`
+> Elasticsearch does not need initialization
 
 Now spin up the consumer as a service using `queue_listener.py`
 
