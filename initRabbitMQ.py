@@ -1,5 +1,5 @@
 from tools import connect
-from tools.init import init
+from tools import init
 from rich import print
 import logging
 from tools.error import error
@@ -21,7 +21,7 @@ except Exception:
     error('Error connecting to RabbitMQ')
 
 try:
-    init(channel, args.rabbit_exchange, args.rabbit_exchange_type,
+    init.rabbitmq(channel, args.rabbit_exchange, args.rabbit_exchange_type,
          args.rabbit_exchange_durable, args.rabbit_exchange_passive,
          args.rabbit_queue, args.rabbit_route_key)
 except Exception:

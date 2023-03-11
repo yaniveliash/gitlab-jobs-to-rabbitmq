@@ -1,4 +1,4 @@
-def init(channel, exchange_name: str, exchange_type: str, durable: bool,
+def rabbitmq(channel, exchange_name: str, exchange_type: str, durable: bool,
          passive: bool, queue_name: str, routing_key: str):
     # Create an exchange only if it doesn't exist
 
@@ -9,7 +9,7 @@ def init(channel, exchange_name: str, exchange_type: str, durable: bool,
             exchange=exchange_name, exchange_type=exchange_type,
             durable=durable, passive=passive)
     except Exception as e:
-        raise ValueError("Error in function1") from e
+        raise ValueError("Error in function") from e
 
     # Check if the queue exists
     queue_declare = channel.queue_declare(
