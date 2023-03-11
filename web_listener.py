@@ -3,10 +3,10 @@ import urllib.parse
 import signal
 import sys
 from tools.post import postMsg
-from tools.connect import connect
-import argparse
+from tools import connect
 from rich import print
 from tools.error import error
+from tools import cli
 
 
 def signal_handler(sig, frame):
@@ -34,6 +34,15 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             job_name = query_params.get('job_name', [''])[0]
             gitlab_token = query_params.get('gitlab_token', [''])[0]
 
+            try:
+                connection, channel = connect.rabbitmq(args.rabbit_user,
+                                                       args.rabbit_pass,
+                                                       args.rabbit_host,
+                                                       args.rabbit_port,
+                                                       args.rabbit_vhost)
+            except Exception:
+                error("Error connecting to RabbitMQ")
+
             postMsg(channel,
                     project_id,
                     job_id,
@@ -58,46 +67,12 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_error(500, str(e))
 
 
+global args
+
 signal.signal(signal.SIGINT, signal_handler)
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description='Start a web server to handle \
-                                 GET requests from Gitlab pipelines which \
-                                 are being posted to RabbitMQ for further \
-                                 processing.')
-parser.add_argument('-p', dest='port', type=int, default=8080,
-                    help='The port to listen on [Default: 8080]')
-parser.add_argument('--user', dest='rabbit_user', type=str,
-                    required=True, help='RabbitMQ Username')
-parser.add_argument('--pass', dest='rabbit_pass', type=str,
-                    required=True, help='RabbitMQ Password')
-parser.add_argument('--host', dest='rabbit_host', type=str,
-                    required=True, help='RabbitMQ Host')
-parser.add_argument('--port', dest='rabbit_port', type=int,
-                    default=5672, help='RabbitMQ Port [Default: 5672]')
-parser.add_argument('--vhost', dest='rabbit_vhost', type=str,
-                    default='my_vhost', help='RabbitMQ VHost \
-                        [Default: my_vhost]')
-parser.add_argument('--exchange', dest='rabbit_exchange', type=str,
-                    default='gitlab_exchange', help='RabbitMQ Exchange \
-                        [Default: gitlab_exchange]')
-parser.add_argument('--routekey', dest='rabbit_route_key', type=str,
-                    default='jobs', help='RabbitMQ Exchange Routing Key \
-                        [Default: jobs]')
-parser.add_argument('--gitlab', dest='gitlab_url', type=str,
-                    default='https://gitlab.com/api/v4/projects/',
-                    help='Gitlab Base URL \
-                        [Default: https://gitlab.com/api/v4/projects/]')
-parser.add_argument('--debug', action='store_true', help='enable debug mode')
-
-args = parser.parse_args()
-
-try:
-    connection, channel = connect(args.rabbit_user, args.rabbit_pass,
-                                  args.rabbit_host, args.rabbit_port,
-                                  args.rabbit_vhost)
-except Exception:
-    error("Error connecting to RabbitMQ")
+# Initialize CLI flags
+args = cli.web()
 
 # Start the web server on port 8080
 httpd = HTTPServer(('localhost', args.port), MyHTTPRequestHandler)
