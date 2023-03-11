@@ -1,9 +1,10 @@
 import traceback
+import logging
 from rich import print
 import sys
 
 
 def error(msg):
     print(f'[red]{msg}[/red]\n')
-    traceback.print_exc()
+    logging.error(traceback.format_exc())
     sys.exit(1)

@@ -2,6 +2,7 @@ import json
 from rich import print
 import logging
 import requests
+from tools import es
 
 
 logging.basicConfig(level=logging.INFO,
@@ -21,20 +22,19 @@ def getJobConsole(payload):
 
 
 # Define a callback function to handle incoming messages
-def callback(ch, method, properties, message: str):
-    payload = json.loads(message)
+def callback(ch, method, properties, rabbit_message: str):
+    payload = json.loads(rabbit_message)
     logging.info('Got new message')
-    if debug:
+    if args.debug:
         print(payload)
     job_console_output = getJobConsole(payload)
-    for chunk in job_console_output.iter_content(chunk_size=1024):
-        print(chunk)
+    es.ingest(args, job_console_output, payload)
 
 
-def getMessage(channel, queue_name: str, d: bool):
-    global debug
-    debug = d
+def getMessage(channel, a):
+    global args
+    args = a
     # Start consuming messages from the queue
-    channel.basic_consume(queue=queue_name, on_message_callback=callback,
+    channel.basic_consume(queue=args.rabbit_queue, on_message_callback=callback,
                           auto_ack=True)
     channel.start_consuming()
