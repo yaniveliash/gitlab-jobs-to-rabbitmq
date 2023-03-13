@@ -1,35 +1,40 @@
 import json
 from tools import connect
 import urllib3
-from rich import print
 import datetime
 import logging
+from tools import cli
+import sys
 
 
-def ingest(args, console, payload):
-    global es
-    global index_name
+args = cli.queue()
 
-    # Surpress Elasticsearch output
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    # Index name is always YYYY-MM-DD-$IndexName
-    index_name = datetime.datetime.today().strftime('%Y-%m-%d') + '-' \
-        + payload['index_name']
-
+try:
     es = connect.elasticsearch(args.es_host, args.es_port, args.es_user,
                                args.es_pass, args.es_url_scheme,
                                args.es_ssl_noverify)
+except Exception:
+    logging.error('Elasticsearch connection failed')
+    sys.exit(1)
+
+
+def ingest(console, payload):
+    # Surpress Elasticsearch output
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    # Index name is always $IndexName-YYYY-MM-DD
+    index_name = payload['index_name'] + '-' + \
+        datetime.datetime.today().strftime('%Y-%m-%d')
 
     # If index missing, create it
     if not es.indices.exists(index=index_name):
         es.indices.create(index=index_name, settings={"number_of_shards": 1,
                                                       "number_of_replicas": 0})
 
-    process(console.decode('utf-8'), payload)
+    process(console.decode('utf-8'), payload, index_name)
 
 
-def process(console, payload):
+def process(console, payload, index_name):
     docs = []
     for line in console.splitlines():
         doc = {'timestamp': ' '.join([datetime.datetime.utcnow().isoformat()]),
@@ -44,10 +49,10 @@ def process(console, payload):
 
     # Convert the list of dictionaries to JSON
     payload = json.dumps(docs)
-    shipIt(payload)
+    shipIt(payload, index_name)
 
 
-def shipIt(payload):
+def shipIt(payload, index_name):
     bulk_data = []
 
     for obj in json.loads(payload):
@@ -57,4 +62,4 @@ def shipIt(payload):
         bulk_data.append(doc)
     es.bulk(index=index_name, operations=bulk_data)
 
-    logging.info('Loaded data to Elasticsearch')
+    logging.info('Data load to Elasticsearch was successful')
