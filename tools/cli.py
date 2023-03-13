@@ -124,6 +124,7 @@ def rabbitInit():
     parser.add_argument('--queue', dest='rabbit_queue', type=str,
                         default='jobs', help='RabbitMQ Queue Name \
                             [Default: jobs]')
-    parser.add_argument('--debug', action='store_true', help='enable debug mode')
+    parser.add_argument('--debug', action='store_true', help='enable debug \
+                        mode')
 
     return parser.parse_args()
