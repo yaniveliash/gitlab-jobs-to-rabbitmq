@@ -7,7 +7,7 @@ from tools import cli
 import sys
 
 
-args = cli.queue()
+args = cli.args()
 
 try:
     es = connect.elasticsearch(args.es_host, args.es_port, args.es_user,

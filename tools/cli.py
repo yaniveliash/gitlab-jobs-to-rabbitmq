@@ -17,44 +17,10 @@ es_url_scheme = 'https'
 es_verify_ssl = False
 
 
-def web():
-    parser = argparse.ArgumentParser(description='Start a web \
-                                     server to handle GET requests \
-                                     from Gitlab pipelines which are \
-                                     being posted to RabbitMQ for further \
-                                    processing.')
+def args():
+    parser = argparse.ArgumentParser(description='Gitlab Pipelines to Elasticsearch tool')
     parser.add_argument('-p', dest='port', type=int, default=web_port,
                         help=f'The port to listen on [Default: {web_port}]')
-    parser.add_argument('--user', dest='rabbit_user', type=str,
-                        required=True, help='RabbitMQ Username')
-    parser.add_argument('--pass', dest='rabbit_pass', type=str,
-                        required=True, help='RabbitMQ Password')
-    parser.add_argument('--host', dest='rabbit_host', type=str,
-                        required=True, help='RabbitMQ Host')
-    parser.add_argument('--port', dest='rabbit_port', type=int,
-                        default=rabbit_port, help=f'RabbitMQ Port \
-                            [Default: {rabbit_port}]')
-    parser.add_argument('--vhost', dest='rabbit_vhost', type=str,
-                        default=rabbit_vhost, help=f'RabbitMQ VHost \
-                            [Default: {rabbit_vhost}]')
-    parser.add_argument('--exchange', dest='rabbit_exchange', type=str,
-                        default=rabbit_exchange, help=f'RabbitMQ Exchange \
-                            [Default: {rabbit_exchange}]')
-    parser.add_argument('--routekey', dest='rabbit_route_key', type=str,
-                        default=rabbit_routing_key, help=f'RabbitMQ Exchange \
-                            Routing Key [Default: {rabbit_routing_key}]')
-    parser.add_argument('--gitlab', dest='gitlab_url', type=str,
-                        default=gitlab_url, help=f'Gitlab Base URL \
-                            [Default: {gitlab_url}]')
-    parser.add_argument('--debug', action='store_true',
-                        help='enable debug mode')
-
-    return parser.parse_args()
-
-
-def queue():
-    parser = argparse.ArgumentParser(description='Initialize RabbitMQ for \
-                                 receiving messages from Gitlab jobs.')
     parser.add_argument('--rmq-user', dest='rabbit_user', type=str,
                         required=True, help='RabbitMQ Username')
     parser.add_argument('--rmq-pass', dest='rabbit_pass', type=str,

@@ -21,9 +21,7 @@ except Exception:
     error('Error connecting to RabbitMQ')
 
 try:
-    init.rabbitmq(channel, args.rabbit_exchange, args.rabbit_exchange_type,
-         args.rabbit_exchange_durable, args.rabbit_exchange_passive,
-         args.rabbit_queue, args.rabbit_route_key)
+    init.rabbitmq(channel, args)
 except Exception:
     error('Error initializing RabbitMQ')
 

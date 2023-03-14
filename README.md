@@ -23,10 +23,21 @@ It then transform each line from the console output into an Elasticsearch docume
 ## Web listener from gitlab
 `web_listener.py`
 
-- Listening on port 8080
+- Listening on port 8080 by default
 - Acceping 5 URL Query payload
 - Jsonfy query
 - Ship message to RabbitMQ
+
+### Web listener endpoints
+
+- /?
+  - print on script the mandatory params
+- / 
+  - result in 404
+- /healthcheck
+  - check both elasticsearch and rabbitmq connections
+- /healthcheck?elasticsearch OR /healthcheck?rabbitmq
+  - check specific service
 
 ### Query Variables:
 
@@ -46,16 +57,26 @@ It then transform each line from the console output into an Elasticsearch docume
 ```
   -h, --help            show this help message and exit
   -p PORT               The port to listen on [Default: 8080]
-  --user RABBIT_USER    RabbitMQ Username
-  --pass RABBIT_PASS    RabbitMQ Password
-  --host RABBIT_HOST    RabbitMQ Host
-  --port RABBIT_PORT    RabbitMQ Port [Default: 5672]
-  --vhost RABBIT_VHOST  RabbitMQ VHost [Default: my_vhost]
-  --exchange RABBIT_EXCHANGE
-                        RabbitMQ Exchange [Default: gitlab_jobs]
-  --routekey RABBIT_ROUTE_KEY
-                        RabbitMQ Exchange Routing Key [Default: jobs]
-  --gitlab GITLAB_URL   Gitlab Base URL [Default: https://gitlab.com/]
+  --rmq-user RABBIT_USER
+                        RabbitMQ Username
+  --rmq-pass RABBIT_PASS
+                        RabbitMQ Password
+  --rmq-host RABBIT_HOST
+                        RabbitMQ Host
+  --rmq-port RABBIT_PORT
+                        RabbitMQ Port [Default: 5672]
+  --rmq-vhost RABBIT_VHOST
+                        RabbitMQ VHost [Default: my_vhost]
+  --rmq-queue RABBIT_QUEUE
+                        RabbitMQ Queue Name [Default: jobs]
+  --es-host ES_HOST     Elasticsearch Hostname
+  --es-port ES_PORT     Elasticsearch port [Default: 9200]
+  --es-user ES_USER     Elasticsearch Username [Default: elastic]
+  --es-pass ES_PASS     Elasticsearch Password for user 'elastic'
+  --es-url-scheme ES_URL_SCHEME
+                        Elasticsearch URL scheme [http/https] [Default: https]
+  --es-verify-ssl ES_SSL_NOVERIFY
+                        Elasticsearch ignore self-signed SSL certificates [Default: False]
   --debug               enable debug mode
 ```
 
@@ -78,6 +99,7 @@ It then transform each line from the console output into an Elasticsearch docume
 
 ```
   -h, --help            show this help message and exit
+  -p PORT               The port to listen on [Default: 8080]
   --rmq-user RABBIT_USER
                         RabbitMQ Username
   --rmq-pass RABBIT_PASS

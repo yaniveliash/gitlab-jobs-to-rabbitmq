@@ -1,3 +1,5 @@
+docker network create elastic
+
 docker run -d \
 --name elasticsearch \
 --net elastic \
